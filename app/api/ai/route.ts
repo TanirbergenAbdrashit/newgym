@@ -1,23 +1,25 @@
+export const dynamic = "force-dynamic";
+
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
 const openai = new OpenAI({
   baseURL: 'https://api.deepseek.com',
-  apiKey: 'sk-564facd331e04fe2bf2bef53d555d104',
+  apiKey: 'sk-5cef9f00ddd44884b956cc57ec2e5492',
 });
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
-  const { messages } = body;
-
   try {
+    const body = await req.json();
+    const { messages } = body;
     const completion = await openai.chat.completions.create({
       messages,
       model: 'deepseek-chat',
       max_tokens: 500,
     });
-    return NextResponse.json(completion);
+    return NextResponse.json({ result: completion.choices?.[0]?.message?.content || '' });
   } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    console.error('AI API error:', e);
+    return NextResponse.json({ error: 'AI API error', details: e?.message || String(e) }, { status: 500 });
   }
 } 

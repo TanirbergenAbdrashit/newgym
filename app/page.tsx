@@ -26,11 +26,25 @@ const defaultTrainers = [
   { name: "Дмитрий Смирнов", specialization: "Кроссфит", image: "" },
   { name: "Елена Соколова", specialization: "Йога и стретчинг", image: "" },
 ];
+const defaultEquipment = [
+  { name: "Беговые дорожки", desc: "Современные беговые дорожки с различными программами тренировок", image: "" },
+  { name: "Силовые тренажеры", desc: "Полный набор силового оборудования для всех групп мышц", image: "" },
+  { name: "Велотренажеры", desc: "Кардио оборудование для эффективных тренировок", image: "" },
+  { name: "Свободные веса", desc: "Гантели, штанги и блины для силовых тренировок", image: "" },
+];
+const defaultFeatures = [
+  { name: "24/7 Доступ", desc: "Тренажерный зал работает круглосуточно", image: "" },
+  { name: "Парковка", desc: "Бесплатная парковка для клиентов", image: "" },
+  { name: "Душ и раздевалки", desc: "Комфортные условия для переодевания", image: "" },
+  { name: "Wi-Fi", desc: "Бесплатный высокоскоростной интернет", image: "" },
+];
 
 export default function Home() {
   const [services, setServices] = useState(defaultServices);
   const [plans, setPlans] = useState(defaultPlans);
   const [trainers, setTrainers] = useState(defaultTrainers);
+  const [equipment, setEquipment] = useState(defaultEquipment);
+  const [features, setFeatures] = useState(defaultFeatures);
   const [reviews, setReviews] = useState([]);
   const [contacts, setContacts] = useState({
     address: "ул. Примерная, 123",
@@ -52,6 +66,10 @@ export default function Home() {
       if (p) setPlans(JSON.parse(p).map((pl:any) => ({ name: pl.name, price: pl.price, features: pl.options || pl.features })));
       const t = localStorage.getItem('trainers');
       if (t) setTrainers(JSON.parse(t).map((tr:any) => ({ name: tr.name, specialization: tr.spec || tr.specialization, image: tr.photo || tr.image })));
+      const e = localStorage.getItem('equipment');
+      if (e) setEquipment(JSON.parse(e));
+      const f = localStorage.getItem('features');
+      if (f) setFeatures(JSON.parse(f));
       const r = localStorage.getItem('reviews');
       if (r) setReviews(JSON.parse(r));
       const c = localStorage.getItem('contacts');
@@ -81,9 +99,9 @@ export default function Home() {
       <section className="py-20 bg-gray-100">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl font-bold text-center mb-12">Наши услуги</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="flex overflow-x-auto gap-6 pb-4 scrollbar-hide">
             {services.map((service, index) => (
-              <div key={index} className="bg-white p-6 rounded-lg shadow-lg text-center">
+              <div key={index} className="bg-white p-6 rounded-lg shadow-lg text-center min-w-[280px] flex-shrink-0">
                 <div className="flex justify-center mb-4">
                   <UserGroupIcon className="w-12 h-12 text-red-600" />
                 </div>
@@ -95,13 +113,44 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Equipment Section */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-4xl font-bold text-center mb-12">Оборудование</h2>
+          <div className="flex overflow-x-auto gap-6 pb-4 scrollbar-hide">
+            {equipment.map((item, index) => (
+              <div key={index} className="bg-gray-50 rounded-lg shadow-lg overflow-hidden min-w-[320px] flex-shrink-0">
+                <div className="relative h-48">
+                  {item.image ? (
+                    <Image
+                      src={item.image}
+                      alt={item.name}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-300 flex items-center justify-center">
+                      <SparklesIcon className="w-16 h-16 text-gray-400" />
+                    </div>
+                  )}
+                </div>
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold mb-2">{item.name}</h3>
+                  <p className="text-gray-600">{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Membership Section */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl font-bold text-center mb-12">Абонементы</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="flex overflow-x-auto gap-6 pb-4 scrollbar-hide">
             {plans.map((plan, index) => (
-              <div key={index} className="bg-gray-50 p-8 rounded-lg shadow-lg text-center">
+              <div key={index} className="bg-gray-50 p-8 rounded-lg shadow-lg text-center min-w-[320px] flex-shrink-0">
                 <h3 className="text-2xl font-bold mb-4">{plan.name}</h3>
                 <p className="text-4xl font-bold text-red-600 mb-6">{plan.price} ₽/мес</p>
                 <ul className="mb-8">
@@ -115,13 +164,44 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Features Section */}
+      <section className="py-20 bg-gray-100">
+        <div className="container mx-auto px-4">
+          <h2 className="text-4xl font-bold text-center mb-12">Преимущества</h2>
+          <div className="flex overflow-x-auto gap-6 pb-4 scrollbar-hide">
+            {features.map((feature, index) => (
+              <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden min-w-[320px] flex-shrink-0">
+                <div className="relative h-48">
+                  {feature.image ? (
+                    <Image
+                      src={feature.image}
+                      alt={feature.name}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-300 flex items-center justify-center">
+                      <HeartIcon className="w-16 h-16 text-gray-400" />
+                    </div>
+                  )}
+                </div>
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold mb-2">{feature.name}</h3>
+                  <p className="text-gray-600">{feature.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Trainers Section */}
       <section className="py-20 bg-gray-100">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl font-bold text-center mb-12">Наши тренеры</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="flex overflow-x-auto gap-6 pb-4 scrollbar-hide">
             {trainers.map((trainer, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden">
+              <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden min-w-[280px] flex-shrink-0">
                 <div className="relative h-64">
                   <Image
                     src={trainer.image}
@@ -144,9 +224,9 @@ export default function Home() {
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl font-bold text-center mb-12">Отзывы</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="flex overflow-x-auto gap-6 pb-4 scrollbar-hide">
             {reviews.map((review, index) => (
-              <div key={index} className="bg-gray-50 p-6 rounded-lg shadow-lg">
+              <div key={index} className="bg-gray-50 p-6 rounded-lg shadow-lg min-w-[320px] flex-shrink-0">
                 <div className="flex items-center mb-4">
                   <div className="text-yellow-400 flex">
                     {[...Array(review.rating)].map((_, i) => (
@@ -238,6 +318,14 @@ export default function Home() {
           </div>
           <div className="mt-8 text-center text-gray-400">
             <p>&copy; 2024 PowerFit Gym. Все права защищены.</p>
+            <div className="mt-4">
+              <button
+                onClick={() => window.open('/admin', '_blank')}
+                className="text-xs text-gray-300 hover:text-white underline"
+              >
+                Вход для админа
+              </button>
+            </div>
           </div>
         </div>
       </footer>

@@ -34,9 +34,10 @@ export default function ChatWidget() {
       const data = await res.json();
       if (data.error) {
         setMessages([...newMessages, { role: "assistant", content: `Ошибка: ${data.error}` }]);
+      } else if (data.result) {
+        setMessages([...newMessages, { role: "assistant", content: data.result }]);
       } else {
-        const botReply = data.choices?.[0]?.message?.content || "Извините, не удалось получить ответ.";
-        setMessages([...newMessages, { role: "assistant", content: botReply }]);
+        setMessages([...newMessages, { role: "assistant", content: "Извините, не удалось получить ответ." }]);
       }
     } catch (e: any) {
       setMessages([...newMessages, { role: "assistant", content: `Произошла ошибка: ${e.message}` }]);
@@ -50,15 +51,18 @@ export default function ChatWidget() {
     <>
       {/* Кнопка чата */}
       <button
-        className="fixed z-50 bottom-6 right-6 bg-red-600 hover:bg-red-700 text-white rounded-full p-4 shadow-lg focus:outline-none"
+        className="fixed z-[9999] bottom-6 right-6 bg-red-600 hover:bg-red-700 text-white rounded-full p-4 shadow-lg focus:outline-none"
         onClick={() => setOpen((v) => !v)}
         aria-label="Открыть чат"
+        style={{ pointerEvents: 'auto' }}
       >
         <FaComments size={28} />
       </button>
       {/* Окно чата */}
       {open && (
-        <div className="fixed z-50 bottom-24 right-6 w-80 max-w-[95vw] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 animate-fade-in">
+        <div className="fixed z-[9999] bottom-24 right-6 w-80 max-w-[95vw] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 animate-fade-in"
+          style={{ pointerEvents: 'auto' }}
+        >
           <div className="bg-red-600 text-white px-4 py-3 font-bold flex items-center justify-between">
             <span>ИИ-консультант</span>
             <button onClick={() => setOpen(false)} className="text-white text-xl leading-none">×</button>

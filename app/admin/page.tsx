@@ -1,3 +1,4 @@
+// NOTE: This file is now duplicated in newgym/app/admin/page.tsx. Edit that file if newgym is your main app.
 "use client";
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
@@ -19,6 +20,18 @@ const initialTrainers = [
   { id: 2, name: "Мария Иванова", spec: "Функциональный тренинг", photo: "" },
   { id: 3, name: "Дмитрий Смирнов", spec: "Кроссфит", photo: "" },
   { id: 4, name: "Елена Соколова", spec: "Йога и стретчинг", photo: "" },
+];
+const initialEquipment = [
+  { id: 1, name: "Беговые дорожки", desc: "Современные беговые дорожки с различными программами тренировок", image: "" },
+  { id: 2, name: "Силовые тренажеры", desc: "Полный набор силового оборудования для всех групп мышц", image: "" },
+  { id: 3, name: "Велотренажеры", desc: "Кардио оборудование для эффективных тренировок", image: "" },
+  { id: 4, name: "Свободные веса", desc: "Гантели, штанги и блины для силовых тренировок", image: "" },
+];
+const initialFeatures = [
+  { id: 1, name: "24/7 Доступ", desc: "Тренажерный зал работает круглосуточно", image: "" },
+  { id: 2, name: "Парковка", desc: "Бесплатная парковка для клиентов", image: "" },
+  { id: 3, name: "Душ и раздевалки", desc: "Комфортные условия для переодевания", image: "" },
+  { id: 4, name: "Wi-Fi", desc: "Бесплатный высокоскоростной интернет", image: "" },
 ];
 
 function loadLS(key, fallback) {
@@ -48,6 +61,8 @@ export default function AdminPage() {
   const [services, setServices] = useState(initialServices);
   const [plans, setPlans] = useState(initialPlans);
   const [trainers, setTrainers] = useState(initialTrainers);
+  const [equipment, setEquipment] = useState(initialEquipment);
+  const [features, setFeatures] = useState(initialFeatures);
   const [reviews, setReviews] = useState([]);
   const [contacts, setContacts] = useState(() => loadLS('contacts', {
     address: "ул. Примерная, 123",
@@ -70,6 +85,8 @@ export default function AdminPage() {
     setServices(loadLS('services', initialServices));
     setPlans(loadLS('plans', initialPlans));
     setTrainers(loadLS('trainers', initialTrainers));
+    setEquipment(loadLS('equipment', initialEquipment));
+    setFeatures(loadLS('features', initialFeatures));
     setReviews(loadLS('reviews', []));
     setContacts(loadLS('contacts', {
       address: "ул. Примерная, 123",
@@ -87,6 +104,8 @@ export default function AdminPage() {
   useEffect(() => { if (mounted) saveLS('services', services); }, [services, mounted]);
   useEffect(() => { if (mounted) saveLS('plans', plans); }, [plans, mounted]);
   useEffect(() => { if (mounted) saveLS('trainers', trainers); }, [trainers, mounted]);
+  useEffect(() => { if (mounted) saveLS('equipment', equipment); }, [equipment, mounted]);
+  useEffect(() => { if (mounted) saveLS('features', features); }, [features, mounted]);
   useEffect(() => { if (mounted) saveLS('reviews', reviews); }, [reviews, mounted]);
   useEffect(() => { if (mounted) saveLS('contacts', contacts); }, [contacts, mounted]);
   useEffect(() => { if (mounted) saveLS('intro', intro); }, [intro, mounted]);
@@ -184,11 +203,75 @@ export default function AdminPage() {
     setReviews(reviews.filter(r => r.id !== id));
   }
 
+  // --- CRUD для оборудования ---
+  const [editEquipment, setEditEquipment] = useState<any>(null);
+  const [newEquipment, setNewEquipment] = useState({ name: "", desc: "", image: "" });
+  const equipmentPhotoInputRef = useRef<HTMLInputElement>(null);
+  const newEquipmentPhotoInputRef = useRef<HTMLInputElement>(null);
+
+  function addEquipment() {
+    if (!newEquipment.name.trim() || !newEquipment.desc.trim()) return;
+    setEquipment([...equipment, { ...newEquipment, id: Date.now() }]);
+    setNewEquipment({ name: "", desc: "", image: "" });
+    if (newEquipmentPhotoInputRef.current) newEquipmentPhotoInputRef.current.value = "";
+  }
+  function updateEquipment() {
+    setEquipment(equipment.map(e => e.id === editEquipment.id ? editEquipment : e));
+    setEditEquipment(null);
+  }
+  function deleteEquipment(id: number) {
+    setEquipment(equipment.filter(e => e.id !== id));
+  }
+  function handleEquipmentPhotoChange(e: React.ChangeEvent<HTMLInputElement>, isNew = false) {
+    const file = e.target.files?.[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      if (isNew) {
+        setNewEquipment({ ...newEquipment, image: imageUrl });
+      } else {
+        setEditEquipment({ ...editEquipment, image: imageUrl });
+      }
+    }
+  }
+
+  // --- CRUD для преимуществ ---
+  const [editFeature, setEditFeature] = useState<any>(null);
+  const [newFeature, setNewFeature] = useState({ name: "", desc: "", image: "" });
+  const featurePhotoInputRef = useRef<HTMLInputElement>(null);
+  const newFeaturePhotoInputRef = useRef<HTMLInputElement>(null);
+
+  function addFeature() {
+    if (!newFeature.name.trim() || !newFeature.desc.trim()) return;
+    setFeatures([...features, { ...newFeature, id: Date.now() }]);
+    setNewFeature({ name: "", desc: "", image: "" });
+    if (newFeaturePhotoInputRef.current) newFeaturePhotoInputRef.current.value = "";
+  }
+  function updateFeature() {
+    setFeatures(features.map(f => f.id === editFeature.id ? editFeature : f));
+    setEditFeature(null);
+  }
+  function deleteFeature(id: number) {
+    setFeatures(features.filter(f => f.id !== id));
+  }
+  function handleFeaturePhotoChange(e: React.ChangeEvent<HTMLInputElement>, isNew = false) {
+    const file = e.target.files?.[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      if (isNew) {
+        setNewFeature({ ...newFeature, image: imageUrl });
+      } else {
+        setEditFeature({ ...editFeature, image: imageUrl });
+      }
+    }
+  }
+
   // Быстрая навигация
   const sectionRefs = {
     intro: useRef<HTMLDivElement>(null),
     services: useRef<HTMLDivElement>(null),
+    equipment: useRef<HTMLDivElement>(null),
     plans: useRef<HTMLDivElement>(null),
+    features: useRef<HTMLDivElement>(null),
     trainers: useRef<HTMLDivElement>(null),
     reviews: useRef<HTMLDivElement>(null),
     contacts: useRef<HTMLDivElement>(null),
@@ -222,7 +305,9 @@ export default function AdminPage() {
       <nav className="flex gap-2 mb-6 sticky top-0 z-40 bg-gray-50 py-2 px-2 rounded shadow">
         <button onClick={()=>scrollToSection('intro')} className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300">Интро</button>
         <button onClick={()=>scrollToSection('services')} className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300">Услуги</button>
+        <button onClick={()=>scrollToSection('equipment')} className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300">Оборудование</button>
         <button onClick={()=>scrollToSection('plans')} className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300">Абонементы</button>
+        <button onClick={()=>scrollToSection('features')} className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300">Преимущества</button>
         <button onClick={()=>scrollToSection('trainers')} className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300">Тренеры</button>
         <button onClick={()=>scrollToSection('reviews')} className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300">Отзывы</button>
         <button onClick={()=>scrollToSection('contacts')} className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300">Контакты</button>
@@ -280,6 +365,41 @@ export default function AdminPage() {
           <button className="bg-green-600 text-white px-3 py-1 rounded" onClick={addService}>Добавить</button>
         </div>
       </section>
+      {/* Оборудование */}
+      <section ref={sectionRefs.equipment} className="mb-10 bg-white rounded-lg shadow p-6">
+        <h2 className="text-xl font-bold mb-4">🏋️ Оборудование</h2>
+        <div className="space-y-2 mb-4">
+          {equipment.map(e => (
+            <div key={e.id} className="flex items-center gap-2 border-b py-2">
+              {editEquipment?.id === e.id ? (
+                <>
+                  <input className="border px-2 py-1 rounded mr-2" value={editEquipment.name} onChange={e=>setEditEquipment({...editEquipment, name: e.target.value})} />
+                  <input className="border px-2 py-1 rounded mr-2" value={editEquipment.desc} onChange={e=>setEditEquipment({...editEquipment, desc: e.target.value})} />
+                  <input type="file" accept="image/*" onChange={e=>handleEquipmentPhotoChange(e, false)} className="mr-2" />
+                  {editEquipment.image && editEquipment.image !== "" && <Image src={editEquipment.image} alt="Превью" width={40} height={40} className="rounded object-cover mr-2" />}
+                  <button className="text-green-600 mr-2" onClick={updateEquipment}>Сохранить</button>
+                  <button className="text-gray-500" onClick={()=>setEditEquipment(null)}>Отмена</button>
+                </>
+              ) : (
+                <>
+                  {e.image && e.image !== "" && <Image src={e.image} alt={e.name} width={40} height={40} className="rounded object-cover mr-2" />}
+                  <span className="font-semibold">{e.name}</span>
+                  <span className="text-gray-500 ml-2">{e.desc}</span>
+                  <button className="text-blue-600 ml-2" onClick={()=>setEditEquipment(e)}>Редактировать</button>
+                  <button className="text-red-600 ml-2" onClick={()=>deleteEquipment(e.id)}>Удалить</button>
+                </>
+              )}
+            </div>
+          ))}
+        </div>
+        <div className="flex gap-2 mt-2 flex-wrap items-center">
+          <input className="border px-2 py-1 rounded" placeholder="Название" value={newEquipment.name} onChange={e=>setNewEquipment({...newEquipment, name: e.target.value})} />
+          <input className="border px-2 py-1 rounded" placeholder="Описание" value={newEquipment.desc} onChange={e=>setNewEquipment({...newEquipment, desc: e.target.value})} />
+          <input type="file" accept="image/*" onChange={e=>handleEquipmentPhotoChange(e, true)} className="border px-2 py-1 rounded" ref={newEquipmentPhotoInputRef} />
+          {newEquipment.image && newEquipment.image !== "" && <Image src={newEquipment.image} alt="Превью" width={40} height={40} className="rounded object-cover" />}
+          <button className="bg-green-600 text-white px-3 py-1 rounded" onClick={addEquipment}>Добавить</button>
+        </div>
+      </section>
       {/* Абонементы */}
       <section ref={sectionRefs.plans} className="mb-10 bg-white rounded-lg shadow p-6">
         <h2 className="text-xl font-bold mb-4">💳 Абонементы</h2>
@@ -311,6 +431,41 @@ export default function AdminPage() {
           <input className="border px-2 py-1 rounded w-24" type="number" placeholder="Цена" value={newPlan.price} onChange={e=>setNewPlan({...newPlan, price: e.target.value})} />
           <input className="border px-2 py-1 rounded" placeholder="Опции через запятую" value={newPlan.options} onChange={e=>setNewPlan({...newPlan, options: e.target.value})} />
           <button className="bg-green-600 text-white px-3 py-1 rounded" onClick={addPlan}>Добавить</button>
+        </div>
+      </section>
+      {/* Преимущества */}
+      <section ref={sectionRefs.features} className="mb-10 bg-white rounded-lg shadow p-6">
+        <h2 className="text-xl font-bold mb-4">⭐ Преимущества</h2>
+        <div className="space-y-2 mb-4">
+          {features.map(f => (
+            <div key={f.id} className="flex items-center gap-2 border-b py-2">
+              {editFeature?.id === f.id ? (
+                <>
+                  <input className="border px-2 py-1 rounded mr-2" value={editFeature.name} onChange={e=>setEditFeature({...editFeature, name: e.target.value})} />
+                  <input className="border px-2 py-1 rounded mr-2" value={editFeature.desc} onChange={e=>setEditFeature({...editFeature, desc: e.target.value})} />
+                  <input type="file" accept="image/*" onChange={e=>handleFeaturePhotoChange(e, false)} className="mr-2" />
+                  {editFeature.image && editFeature.image !== "" && <Image src={editFeature.image} alt="Превью" width={40} height={40} className="rounded object-cover mr-2" />}
+                  <button className="text-green-600 mr-2" onClick={updateFeature}>Сохранить</button>
+                  <button className="text-gray-500" onClick={()=>setEditFeature(null)}>Отмена</button>
+                </>
+              ) : (
+                <>
+                  {f.image && f.image !== "" && <Image src={f.image} alt={f.name} width={40} height={40} className="rounded object-cover mr-2" />}
+                  <span className="font-semibold">{f.name}</span>
+                  <span className="text-gray-500 ml-2">{f.desc}</span>
+                  <button className="text-blue-600 ml-2" onClick={()=>setEditFeature(f)}>Редактировать</button>
+                  <button className="text-red-600 ml-2" onClick={()=>deleteFeature(f.id)}>Удалить</button>
+                </>
+              )}
+            </div>
+          ))}
+        </div>
+        <div className="flex gap-2 mt-2 flex-wrap items-center">
+          <input className="border px-2 py-1 rounded" placeholder="Название" value={newFeature.name} onChange={e=>setNewFeature({...newFeature, name: e.target.value})} />
+          <input className="border px-2 py-1 rounded" placeholder="Описание" value={newFeature.desc} onChange={e=>setNewFeature({...newFeature, desc: e.target.value})} />
+          <input type="file" accept="image/*" onChange={e=>handleFeaturePhotoChange(e, true)} className="border px-2 py-1 rounded" ref={newFeaturePhotoInputRef} />
+          {newFeature.image && newFeature.image !== "" && <Image src={newFeature.image} alt="Превью" width={40} height={40} className="rounded object-cover" />}
+          <button className="bg-green-600 text-white px-3 py-1 rounded" onClick={addFeature}>Добавить</button>
         </div>
       </section>
       {/* Тренеры */}
